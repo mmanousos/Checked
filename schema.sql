@@ -1,0 +1,11 @@
+CREATE TABLE lists (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE items (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  completed boolean NOT NULL DEFAULT false,
+  list_id INT NOT NULL REFERENCES lists (id)
+);
