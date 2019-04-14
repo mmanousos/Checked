@@ -2,7 +2,6 @@ require 'pg'
 
 class DatabasePersistence
   def initialize(logger)
-    # creates our new database object
     @db = if Sinatra::Base.production?
             PG.connect(ENV['DATABASE_URL'])
           else
@@ -26,13 +25,23 @@ class DatabasePersistence
   end
 
   def all_lists
-    sql = 'SELECT * FROM lists'
+    sql = <<~SQL
+          SELECT lists.*,
+                COUNT(items.id) AS todos_count,
+                COUNT(NULLIF(items.completed, true)) AS todos_remaining_count
+          FROM lists
+          LEFT JOIN items
+          ON items.list_id = lists.id
+          GROUP BY lists.id
+          ORDER BY lists.name
+          SQL
     result = query(sql)
 
     result.map do |tuple|
-      list_id = tuple['id'].to_i
-      todos = find_todos_for_list(list_id)
-      {id: list_id, name: tuple['name'], todos: todos}
+      { id: tuple['id'].to_i,
+        name: tuple['name'],
+        todos_count: tuple['todos_count'].to_i,
+        todos_remaining_count: tuple['todos_remaining_count'].to_i }
     end
   end
 
