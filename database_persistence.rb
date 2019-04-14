@@ -11,10 +11,6 @@ class DatabasePersistence
     @logger = logger
   end
 
-  def disconnect
-    @db.close
-  end
-  
   def query(statement, *params)
     @logger.info("#{statement}: #{params}")
     @db.exec_params(statement, params)
@@ -70,6 +66,10 @@ class DatabasePersistence
 
   def mark_all_todos_as_completed(list_id)
     query("UPDATE items SET completed = true WHERE list_id = $1;", list_id)
+  end
+
+  def disconnect
+    @db.close
   end
 
   private
