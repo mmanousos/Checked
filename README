@@ -1,1 +1,5 @@
-Sinatra app for Todo webapp
+Checked Sinatra app with PosgreSQL database
+
+1. run `bundle install`
+2. run `bundle exec rackup -p 3000`
+3. visit `localhost:3000`
